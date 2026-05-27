@@ -1,55 +1,41 @@
-import React, { useState}  from 'react'
-import axios from 'axios'
-import './Posts.css'
+import React from 'react'
+import { Form, redirect } from "react-router-dom";
+import { Container, Card, Input, TextArea, Button } from "./UI";
+
+export async function action({ request }) {
+    const formData = await request.formData();
+    const id = formData.get("id");
+    const updateData = {
+        title: formData.get("title"),
+        content: formData.get("content"),
+        author: formData.get("author")
+    };
+
+    const response = await fetch(`http://localhost:5000/api/posts/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updateData),
+    });
+
+    if (!response.ok) alert("Post ID not found in database");
+    return redirect("/");
+}
+
 function Update() {
-    const [userId, setUserId] = useState(0)
-    const [title, setTitle] = useState('')
-    const [body, setBody] = useState('')
-    const [Id, setId] = useState(0)
-
-    function updatePost(e) {
-        e.preventDefault()
-        const formData = {
-            "Id": Id,
-            "userId": userId,
-            "title": title,
-            "body": body
-        }
-        axios.put('https://jsonplaceholder.typicode.com/posts/'+Id, formData)
-            .then(response => {
-                alert(`Post updated successfully! Status: ${response.status}`)
-                setUserId(0)
-                setTitle('')
-                setBody('')
-                setId(0)
-            })
-            .catch(error => alert(`Error: ${error.message}`))
-    }
-
     return (
-    <div className='posts'>
-        <h1>Update Post</h1>
-        <form onSubmit={updatePost}>
-            <label htmlFor="id" value={Id}>
-                ID:
-            </label>
-            <input type="number" onChange={(e) => setId(e.target.value)} />
-            <label htmlFor="userid" value={userId}>
-                User ID:
-            </label>
-            <input type="number" onChange={(e) => setUserId(e.target.value)} />
-            <label htmlFor="title" value={title} >
-                Title:
-            </label>
-            <input type="text" onChange={(e) => setTitle(e.target.value)} />
-            <label htmlFor="body" value={body} >
-                Body:
-            </label>
-            <textarea onChange={(e) => setBody(e.target.value)} />
-
-            <input type='submit' value="Update"/>
-        </form>
-    </div>
+        <Container>
+            <Card>
+                <h1 className="form-title-update">Update Post</h1>
+                <p>Paste the ID from the Home page to update a specific post.</p>
+                <Form method="post">
+                    <Input name="id" placeholder="MongoDB ID (Copy from Home)" required />
+                    <Input name="title" placeholder="New Title" required />
+                    <Input name="author" placeholder="New Author" />
+                    <TextArea name="content" placeholder="New Content" rows="5" required />
+                    <Button type="submit">Update MongoDB Record</Button>
+                </Form>
+            </Card>
+        </Container>
     )
 }
 

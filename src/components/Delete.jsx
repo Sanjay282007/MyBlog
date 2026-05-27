@@ -1,30 +1,39 @@
-import React, { useState}  from 'react'
-import axios from 'axios'
-import './Posts.css'
-function Delete() {
-    
-    const [Id, setId] = useState(0)
+import React from 'react'
+import { Form, redirect } from "react-router-dom";
+import { Container, Card, Input, Button } from "./UI";
 
-    function deletePost(e) {
-        e.preventDefault()
-        axios.delete('https://jsonplaceholder.typicode.com/posts/'+Id)
-            .then(response => {
-                alert(`Post deleted successfully! Status: ${response.status}`)
-            })
-            .catch(error => alert(`Error: ${error.message}`))
+export async function action({ request }) {
+    const formData = await request.formData();
+    const id = formData.get("id")?.trim();
+
+    if (!id) {
+        alert("Please provide a valid ID");
+        return null;
     }
-    return (
-    <div className='posts'>
-        <h1>Delete a Post</h1>
-        <form onSubmit={deletePost}>
-            <label htmlFor="id" value={Id}>
-                ID:
-            </label>
-            <input type="number" onChange={(e) => setId(e.target.value)} />
 
-            <input type='submit' value="Delete"/>
-        </form>
-    </div>
+    const response = await fetch(`http://localhost:5000/api/posts/${id}`, {
+        method: "DELETE",
+    });
+
+    if (!response.ok) {
+        alert("Post ID not found. Copy the ID exactly from the Home page.");
+        return null;
+    }
+    return redirect("/");
+}
+
+function Delete() {
+    return (
+        <Container>
+            <Card>
+                <h1 className="form-title-delete">Delete Post</h1>
+                <p>Enter the MongoDB ID of the post you want to remove. You can find this on the Home page.</p>
+                <Form method="post">
+                    <Input name="id" placeholder="e.g., 65ba1234..." required />
+                    <Button variant="danger" type="submit">Remove from Database</Button>
+                </Form>
+            </Card>
+        </Container>
     )
 }
 

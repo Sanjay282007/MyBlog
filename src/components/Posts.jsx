@@ -1,49 +1,39 @@
-import React, { useState}  from 'react'
-import axios from 'axios'
-import './Posts.css'
-function Posts() {
-    const [userId, setUserId] = useState(0)
-    const [title, setTitle] = useState('')
-    const [body, setBody] = useState('')
+import React from 'react'
+import { Form, redirect, useNavigation } from "react-router-dom";
+import { Container, Card, Input, TextArea, Button } from "./UI";
 
-    function sendPost(e) {
-        e.preventDefault()
-        const formData = {
-            "userId": userId,
-            "title": title,
-            "body": body
-        }
-        axios.post('https://jsonplaceholder.typicode.com/posts', formData)
-            .then(response => {
-                alert(`Post updated successfully! Status: ${response.status}`)
-                setUserId(0)
-                setTitle('')
-                setBody('')
-                setId(0)
-            })
-            .catch(error => alert(`Error: ${error.message}`))
-    }
+export async function action({ request }) {
+    const formData = await request.formData();
+    const postData = Object.fromEntries(formData);
+    
+    const response = await fetch("http://localhost:5000/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(postData),
+    });
+
+    if (!response.ok) alert("Error saving to MongoDB");
+    return redirect("/");
+}
+
+function Posts() {
+    const navigation = useNavigation();
+    const isSubmitting = navigation.state === "submitting";
 
     return (
-    <div className='posts'>
-        <h1>Send a Post</h1>
-        <form onSubmit={sendPost}>
-            <label htmlFor="userid" value={userId}>
-                User ID:
-            </label>
-            <input type="number" onChange={(e) => setUserId(e.target.value)} />
-            <label htmlFor="title" value={title} >
-                Title:
-            </label>
-            <input type="text" onChange={(e) => setTitle(e.target.value)} />
-            <label htmlFor="body" value={body} >
-                Body:
-            </label>
-            <textarea onChange={(e) => setBody(e.target.value)} />
-
-            <input type='submit' value="Send"/>
-        </form>
-    </div>
+        <Container>
+            <Card>
+                <h1>Create New Post</h1>
+                <Form method="post">
+                    <Input name="title" placeholder="Title" required />
+                    <Input name="author" placeholder="Author Name" required />
+                    <TextArea name="content" placeholder="Content" rows="6" required />
+                    <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? "Syncing with MongoDB..." : "Publish Post"}
+                    </Button>
+                </Form>
+            </Card>
+        </Container>
     )
 }
 

@@ -1,30 +1,35 @@
-import React, { useState, useEffect} from 'react'
-import axios from 'axios'
-import './Home.css'
+import React from 'react'
+import { useLoaderData } from "react-router-dom";
+import { Container } from "./UI";
+import "./Home.css";
+
+export async function loader() {
+    const response = await fetch("http://localhost:5000/api/posts");
+    if (!response.ok) throw new Error("Could not fetch database posts");
+    return response.json();
+}
+
 function Home() {
-    const [data, setData]=useState([])
-    useEffect(()=>{
-        axios.get('https://jsonplaceholder.typicode.com/posts')
-            .then(response => response.data)
-            .then(d => setData(d))
-            console.log(data)
-    }, [data])
+    const posts = useLoaderData();
 
     return (
-        <div className='home'>
+        <div className="home">
             <div className="home-header">
-                <h1>Welcome to My Blog</h1>
+                <h1>Recent Stories</h1>
+                <p>Welcome to MyBlog. Explore the latest insights from our community.</p>
             </div>
-            {
-                data.map((obj) => {
-                    return (
-                        <div className="blog">
-                            <h1>{obj.title}</h1>
-                            <p>{obj.body}</p>
-                        </div>
-                    )
-                })
-            }
+            <Container>
+                {posts.length === 0 && <p>No posts found in MongoDB. Go to "Create" to add one!</p>}
+                {posts.map((post) => (
+                    <div className="blog" key={post._id}>
+                        <h1>{post.title}</h1>
+                        <p>{post.content}</p>
+                        <small className="blog-footer">
+                            By <strong>{post.author || "Anonymous"}</strong> • ID: <code>{post._id}</code>
+                        </small>
+                    </div>
+                ))}
+            </Container>
         </div>
     )
 }
