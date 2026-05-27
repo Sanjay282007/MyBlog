@@ -1,0 +1,37 @@
+.navbar{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: linear-gradient(80deg, #9c5dee 0%, #130808 100%);
+    padding: 1rem;
+}
+.logo{
+    display:flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.logo img{
+    height: 3rem;
+}
+.logo h1{
+    background: linear-gradient(80deg, #081014 0%, #321d91 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1.25rem;
+    margin: 0;
+    text-transform:uppercase;
+}
+.navs {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+.navs li a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.3s;
+}
+.navs li a:hover {
+    color: #03031a;
+}
