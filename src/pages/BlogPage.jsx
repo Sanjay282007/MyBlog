@@ -1,17 +1,15 @@
 import { useLoaderData, Form, useNavigation } from "react-router-dom";
 import { Container, Navbar, Card, Input, TextArea, Button } from "../components/UI";
 
-// RESTful GET: The Loader fetches data from the API before the page renders
 export async function loader() {
   const response = await fetch("http://localhost:5000/api/posts");
   if (!response.ok) throw new Error("Failed to fetch posts from the real API");
   return response.json();
 }
 
-// RESTful POST/DELETE: The Action handles data mutations
 export async function action({ request }) {
   const formData = await request.formData();
-  const method = request.method.toUpperCase(); // Ensure consistency
+  const method = request.method.toUpperCase();
 
   if (method === "POST") {
     const postData = {
@@ -32,11 +30,11 @@ export async function action({ request }) {
     });
   }
 
-  return null; // React Router automatically re-runs the loader to refresh data
+  return null;
 }
 
 export default function BlogPage() {
-  const posts = useLoaderData(); // This is the real data from MongoDB
+  const posts = useLoaderData();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
@@ -46,7 +44,6 @@ export default function BlogPage() {
       <Container>
         <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: "30px" }}>
           
-          {/* Sidebar Form (CREATE) */}
           <aside>
             <Card>
               <h3 style={{ marginTop: 0 }}>Create New Post</h3>
@@ -61,7 +58,6 @@ export default function BlogPage() {
             </Card>
           </aside>
 
-          {/* Feed (READ) */}
           <main>
             <h2 style={{ marginTop: 0 }}>Recent Stories</h2>
             {posts.length === 0 && <p style={{ color: "#6b7280" }}>Your feed is empty. Be the first to post!</p>}
